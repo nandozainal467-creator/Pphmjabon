@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pendaftaran Santri</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+body{
+ font-family:Poppins;
+ background:#0b0b0b;
+ min-height:100vh;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:20px;
+ color:#fff;
+}
+.box{
+ width:100%;
+ max-width:420px;
+ background:rgba(255,255,255,.12);
+ backdrop-filter:blur(14px);
+ border-radius:18px;
+ padding:30px;
+}
+label{font-size:14px;margin-bottom:4px;display:block}
+input,select,textarea{
+ width:100%;
+ padding:10px;
+ margin-bottom:14px;
+ border:none;
+ border-radius:10px;
+}
+textarea{height:70px;resize:none}
+button{
+ width:100%;
+ padding:12px;
+ border:none;
+ border-radius:25px;
+ background:#d4af37;
+ font-weight:600;
+ cursor:pointer;
+}
+small{opacity:.8}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+<h2>Form Pendaftaran Santri</h2>
+
+<form onsubmit="kirim(event)">
+ <label>Nama Lengkap Santri</label>
+ <input id="nama" required>
+
+ <label>Jenis Kelamin</label>
+ <select id="jk" required>
+  <option value="">Pilih</option>
+  <option>Laki-laki</option>
+  <option>Perempuan</option>
+ </select>
+
+ <label>Tanggal Lahir</label>
+ <input id="tgl" type="date" required>
+
+ <label>Jenjang Sekolah</label>
+ <select id="jenjang" required>
+  <option value="">Pilih</option>
+  <option>MI / SD</option>
+  <option>MTs / SMP</option>
+  <option>MA / SMA</option>
+ </select>
+
+ <label>Nama Wali</label>
+ <input id="wali" required>
+
+ <label>Nomor WhatsApp Aktif</label>
+ <input id="wa" required>
+
+ <label>Alamat Lengkap</label>
+ <textarea id="alamat" required></textarea>
+
+ <label>Foto Santri</label>
+ <input type="file" id="foto" accept="image/*" required>
+ <small>Upload foto wajah santri</small>
+
+ <label>Foto KK</label>
+ <input type="file" id="kk" accept="image/*" required>
+ <small>Foto Kartu Keluarga</small>
+
+ <button>Kirim Pendaftaran</button>
+</form>
+</div>
+
+<script>
+const url = "https://script.google.com/macros/s/AKfycbxH4EETG4m-vc5kWRAoOysbOkGcgiqugZ4RxmXPWMAN5RBypCxL3mBPB7nXbfL-ltmA/exec";
+
+function toBase64(file){
+ return new Promise(res=>{
+  const r = new FileReader();
+  r.onload = () => res(r.result.split(",")[1]);
+  r.readAsDataURL(file);
+ });
+}
+
+async function kirim(e){
+ e.preventDefault();
+
+ const fotoFile = foto.files[0];
+ const kkFile = kk.files[0];
+
+ const data = new FormData();
+ data.append("nama", nama.value);
+ data.append("jk", jk.value);
+ data.append("tgl", tgl.value);
+ data.append("jenjang", jenjang.value);
+ data.append("wali", wali.value);
+ data.append("wa", wa.value);
+ data.append("alamat", alamat.value);
+
+ data.append("foto", JSON.stringify({
+  data: await toBase64(fotoFile),
+  type: fotoFile.type
+ }));
+
+ data.append("kk", JSON.stringify({
+  data: await toBase64(kkFile),
+  type: kkFile.type
+ }));
+
+ fetch(url,{method:"POST",body:data})
+  .then(()=>alert("Pendaftaran berhasil dikirim"))
+  .then(()=>document.querySelector("form").reset())
+  .catch(()=>alert("Gagal mengirim data"));
+}
+</script>
+
+</body>
+</html>
